@@ -8,7 +8,6 @@ export default defineNuxtConfig({
     runMigration: false,
   },
   runtimeConfig: {
-    acceptedDomains: undefined,
     adminUser: undefined,
     adminPassword: undefined,
   },

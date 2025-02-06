@@ -2,11 +2,14 @@
 definePageMeta({
   layout: "admin",
 })
+
 import type { TableColumn } from "@nuxt/ui"
 import { Role, type User } from "@prisma/client"
+
 const { data: users, refresh } = await useLazyAsyncData("users", () =>
   useRequestFetch()<User[]>("/api/admin/users")
 )
+console.log(users.value)
 
 const USelect = resolveComponent("USelect")
 const columns: TableColumn<User>[] = [

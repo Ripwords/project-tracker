@@ -35,7 +35,7 @@ const items = ref([
     <UNavigationMenu
       v-if="loggedIn && user?.isAdmin"
       :items="items"
-      class="w-full justify-center"
+      class="px-3"
     />
     <slot />
   </div>

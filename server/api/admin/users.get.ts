@@ -13,9 +13,18 @@ export default defineEventHandler(async (event) => {
   try {
     const users = await prisma.user.findMany({
       where: {
-        role: {
-          not: "ADMIN",
-        },
+        OR: [
+          {
+            role: {
+              not: "ADMIN",
+            },
+          },
+          {
+            role: {
+              isSet: false,
+            },
+          },
+        ],
       },
     })
     return users

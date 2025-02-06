@@ -12,7 +12,11 @@ export default defineNitroPlugin(async () => {
 
     if (!user) {
       await prisma.user.create({
-        data: { email: adminUser, hash: await hashPassword(adminPassword) },
+        data: {
+          email: adminUser,
+          hash: await hashPassword(adminPassword),
+          role: "ADMIN",
+        },
       })
     }
   }
