@@ -1,0 +1,20 @@
+enum Role {
+  ADMIN
+  PROJECT_MANAGER
+  DEVELOPER
+  INTERN
+  PART_TIME
+}
+
+model User {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  discordId String?  @unique
+  username  String?
+  email     String?  @unique
+  role      Role?
+  hash      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  Project   Project? @relation(fields: [projectId], references: [id])
+  projectId String?  @db.ObjectId
+}

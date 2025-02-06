@@ -1,0 +1,13 @@
+---
+description: The project scope
+globs: 
+---
+
+# Project Tracker
+
+- This project is meant to be a webapp that allows internal company users to be able to login, select the project they're working on, and then be able to enter the number of hours worked on that project attached with a small description of task.
+
+- The project should also have an admin mode for project managers to be able to add new projects, and also view the dashboard of who worked on the project, and the number of hours with a graphical data represented using charts.
+
+- The authentication should be using nuxt-auth-utils, the data visualization will be using chartjs, and the UI library will be using Nuxt UI
+
