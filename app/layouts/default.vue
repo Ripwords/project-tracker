@@ -25,7 +25,7 @@ const items = [
     <UNavigationMenu
       v-if="loggedIn"
       :items
-      class="w-full justify-center"
+      class="px-3"
     />
     <slot />
   </div>
