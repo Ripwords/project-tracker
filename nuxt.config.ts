@@ -11,6 +11,11 @@ export default defineNuxtConfig({
     adminUser: undefined,
     adminPassword: undefined,
   },
+  nitro: {
+    imports: {
+      dirs: ["server/lib/**/*.ts"],
+    },
+  },
   devtools: { enabled: true },
   css: ["~/assets/css/main.css"],
   modules: ["@nuxt/ui", "nuxt-auth-utils", "@prisma/nuxt"],

@@ -1,5 +1,5 @@
 import type { DiscordOAuthSuccessResponse } from "#shared/types"
-import prisma from "~~/lib/prisma"
+import prisma from "~~/server/lib/prisma"
 
 export default defineOAuthDiscordEventHandler({
   async onSuccess(event, { user }) {

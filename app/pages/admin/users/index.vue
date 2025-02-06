@@ -5,24 +5,46 @@ definePageMeta({
 
 import type { TableColumn } from "@nuxt/ui"
 import { Role, type User } from "@prisma/client"
+import { PAGE_SIZE } from "#shared/constants"
+const pageIndex = ref(1)
+const pageSize = ref(PAGE_SIZE)
 
-const { data: users, refresh } = await useLazyAsyncData("users", () =>
-  useRequestFetch()<User[]>("/api/admin/users")
+const { data, refresh, status } = await useLazyAsyncData(
+  "users",
+  () =>
+    useRequestFetch()<{
+      users: User[]
+      total: number
+    }>(
+      "/api/admin/users?" +
+        new URLSearchParams({
+          page: pageIndex.value.toString(),
+          limit: pageSize.value.toString(),
+        })
+    ),
+  {
+    watch: [pageIndex, pageSize],
+  }
 )
-console.log(users.value)
+
+const users = computed(() => data.value?.users)
+const total = computed(() => data.value?.total)
 
 const USelect = resolveComponent("USelect")
 const columns: TableColumn<User>[] = [
   {
     accessorKey: "username",
     header: "Username",
+    cell: ({ row }) => {
+      return h("div", { class: "w-28" }, row.original.username || "")
+    },
   },
   {
     accessorKey: "role",
     header: "Role",
     cell: ({ row }) => {
       return h(USelect, {
-        class: "w-full max-w-52",
+        class: "w-56",
         modelValue: row.original.role,
         items: Object.values(Role)
           .filter((role) => role !== "ADMIN")
@@ -46,10 +68,21 @@ const columns: TableColumn<User>[] = [
 </script>
 
 <template>
-  <div class="p-6">
+  <div class="p-6 flex flex-col gap-4 items-center">
     <UTable
-      :columns="columns"
+      class="w-[60%]"
+      :loading="status === 'pending'"
+      :columns
       :data="users"
     />
+
+    <div class="flex justify-center border-t border-[var(--ui-border)] pt-4">
+      <UPagination
+        :default-page="1"
+        :items-per-page="pageSize"
+        :total
+        @update:page="(p) => (pageIndex = p)"
+      />
+    </div>
   </div>
 </template>

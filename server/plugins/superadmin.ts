@@ -1,4 +1,4 @@
-import prisma from "~~/lib/prisma"
+import prisma from "~~/server/lib/prisma"
 
 export default defineNitroPlugin(async () => {
   const config = useRuntimeConfig()

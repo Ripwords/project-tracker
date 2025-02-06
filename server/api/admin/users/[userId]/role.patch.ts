@@ -1,4 +1,3 @@
-import prisma from "~~/lib/prisma"
 import { z } from "zod"
 import { Role } from "@prisma/client"
 
