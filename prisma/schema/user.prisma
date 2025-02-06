@@ -7,14 +7,15 @@ enum Role {
 }
 
 model User {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  discordId String?  @unique
+  id        String      @id @default(auto()) @map("_id") @db.ObjectId
+  discordId String?     @unique
   username  String?
-  email     String?  @unique
+  email     String?     @unique
   role      Role?
   hash      String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  Project   Project? @relation(fields: [projectId], references: [id])
-  projectId String?  @db.ObjectId
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  Project   Project?    @relation(fields: [projectId], references: [id])
+  projectId String?     @db.ObjectId
+  TimeEntry TimeEntry[]
 }

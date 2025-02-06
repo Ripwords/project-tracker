@@ -25,43 +25,45 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
-    const totalUsers = await prisma.user.count({
-      where: {
-        OR: [
-          {
-            role: {
-              not: "ADMIN",
+    const [users, totalUsers] = await prisma.$transaction([
+      prisma.user.findMany({
+        where: {
+          OR: [
+            {
+              role: {
+                not: "ADMIN",
+              },
             },
-          },
-          {
-            role: {
-              isSet: false,
+            {
+              role: {
+                isSet: false,
+              },
             },
-          },
-          ...(role ? [{ role: { in: [role] } }] : []),
-        ],
-      },
-    })
+            ...(role ? [{ role: { in: [role] } }] : []),
+          ],
+        },
+      }),
+      prisma.user.count({
+        where: {
+          OR: [
+            {
+              role: {
+                not: "ADMIN",
+              },
+            },
+            {
+              role: {
+                isSet: false,
+              },
+            },
+            ...(role ? [{ role: { in: [role] } }] : []),
+          ],
+        },
+        skip: (page - 1) * limit,
+        take: limit,
+      }),
+    ])
 
-    const users = await prisma.user.findMany({
-      where: {
-        OR: [
-          {
-            role: {
-              not: "ADMIN",
-            },
-          },
-          {
-            role: {
-              isSet: false,
-            },
-          },
-          ...(role ? [{ role: { in: [role] } }] : []),
-        ],
-      },
-      skip: (page - 1) * limit,
-      take: limit,
-    })
     return {
       users,
       total: totalUsers,
