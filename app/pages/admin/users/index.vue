@@ -4,18 +4,16 @@ definePageMeta({
 })
 
 import type { TableColumn } from "@nuxt/ui"
-import { Role, type User } from "@prisma/client"
+import { Role } from "@prisma/client"
 import { PAGE_SIZE } from "#shared/constants"
+
 const pageIndex = ref(1)
 const pageSize = ref(PAGE_SIZE)
 
 const { data, refresh, status } = await useLazyAsyncData(
   "users",
   () =>
-    useRequestFetch()<{
-      users: User[]
-      total: number
-    }>(
+    useRequestFetch()<Api["/api/admin/users"]["get"]>(
       "/api/admin/users?" +
         new URLSearchParams({
           page: pageIndex.value.toString(),
@@ -31,40 +29,41 @@ const users = computed(() => data.value?.users)
 const total = computed(() => data.value?.total)
 
 const USelect = resolveComponent("USelect")
-const columns: TableColumn<User>[] = [
-  {
-    accessorKey: "username",
-    header: "Username",
-    cell: ({ row }) => {
-      return h("div", { class: "w-28" }, row.original.username || "")
+const columns: TableColumn<Api["/api/admin/users"]["get"]["users"][number]>[] =
+  [
+    {
+      accessorKey: "username",
+      header: "Username",
+      cell: ({ row }) => {
+        return h("div", { class: "w-28" }, row.original.username || "")
+      },
     },
-  },
-  {
-    accessorKey: "role",
-    header: "Role",
-    cell: ({ row }) => {
-      return h(USelect, {
-        class: "w-56",
-        modelValue: row.original.role,
-        items: Object.values(Role)
-          .filter((role) => role !== "ADMIN")
-          .map((role) => ({
-            label: role,
-            value: role,
-          })),
-        "onUpdate:modelValue": async (value: Role) => {
-          await $fetch(`/api/admin/users/${row.original.id}/role`, {
-            method: "PATCH",
-            body: {
-              role: value,
-            },
-          })
-          refresh()
-        },
-      })
+    {
+      accessorKey: "role",
+      header: "Role",
+      cell: ({ row }) => {
+        return h(USelect, {
+          class: "w-56",
+          modelValue: row.original.role,
+          items: Object.values(Role)
+            .filter((role) => role !== "ADMIN")
+            .map((role) => ({
+              label: role,
+              value: role,
+            })),
+          "onUpdate:modelValue": async (value: Role) => {
+            await $fetch(`/api/admin/users/${row.original.id}/role`, {
+              method: "PATCH",
+              body: {
+                role: value,
+              },
+            })
+            refresh()
+          },
+        })
+      },
     },
-  },
-]
+  ]
 </script>
 
 <template>
