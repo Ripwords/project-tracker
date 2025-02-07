@@ -12,20 +12,13 @@ const isModalOpen = ref(false)
 const newProjectName = ref("")
 const toast = useToast()
 
-const { data, refresh, status } = await useLazyAsyncData(
-  "projects",
-  () =>
-    useRequestFetch()<Api["/api/admin/projects"]["get"]>(
-      "/api/admin/projects?" +
-        new URLSearchParams({
-          page: pageIndex.value.toString(),
-          limit: pageSize.value.toString(),
-        })
-    ),
-  {
-    watch: [pageIndex, pageSize],
-  }
-)
+const { data, refresh, status } = await useFetch("/api/admin/projects", {
+  query: {
+    page: pageIndex.value,
+    limit: pageSize.value,
+  },
+  watch: [pageIndex, pageSize],
+})
 
 const projects = computed(() => data.value?.projects ?? [])
 const total = computed(() => data.value?.total ?? 0)
@@ -33,7 +26,7 @@ const total = computed(() => data.value?.total ?? 0)
 async function addProject() {
   try {
     await $fetch("/api/admin/projects", {
-      method: "POST",
+    method: "POST",
       body: { name: newProjectName.value },
     })
     toast.add({

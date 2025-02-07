@@ -6,7 +6,7 @@ const items = ref([
     {
       label: "Home",
       icon: "i-heroicons-home",
-      to: "/",
+      to: "/admin",
     },
     {
       label: "Users",

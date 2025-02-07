@@ -1,9 +1,7 @@
 import { z } from "zod"
-import { Role } from "@prisma/client"
 import { PAGE_SIZE } from "#shared/constants"
 
 const querySchema = z.object({
-  role: z.nativeEnum(Role).optional(),
   page: z.coerce.number().optional(),
   limit: z.coerce.number().optional(),
 })
@@ -11,11 +9,10 @@ const querySchema = z.object({
 export default defineEventHandler(async (event) => {
   const { user } = await getUserSession(event)
 
-  const {
-    role,
-    page = 1,
-    limit = PAGE_SIZE,
-  } = await getValidatedQuery(event, querySchema.parse)
+  const { page = 1, limit = PAGE_SIZE } = await getValidatedQuery(
+    event,
+    querySchema.parse
+  )
 
   if (!user?.isAdmin) {
     throw createError({
@@ -39,7 +36,6 @@ export default defineEventHandler(async (event) => {
                 isSet: false,
               },
             },
-            ...(role ? [{ role: { in: [role] } }] : []),
           ],
         },
       }),
@@ -56,7 +52,6 @@ export default defineEventHandler(async (event) => {
                 isSet: false,
               },
             },
-            ...(role ? [{ role: { in: [role] } }] : []),
           ],
         },
         skip: (page - 1) * limit,
