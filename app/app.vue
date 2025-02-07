@@ -5,5 +5,6 @@
         <NuxtPage />
       </UApp>
     </NuxtLayout>
+    <NuxtPwaAssets />
   </div>
 </template>

@@ -18,5 +18,35 @@ export default defineNuxtConfig({
   },
   devtools: { enabled: true },
   css: ["~/assets/css/main.css"],
-  modules: ["@nuxt/ui", "nuxt-auth-utils", "@prisma/nuxt"],
+  pwa: {
+    manifest: {
+      icons: [
+        {
+          src: "public/img/icons/manifest-icon-192.maskable.png",
+          sizes: "192x192",
+          type: "image/png",
+          purpose: "any",
+        },
+        {
+          src: "public/img/icons/manifest-icon-192.maskable.png",
+          sizes: "192x192",
+          type: "image/png",
+          purpose: "maskable",
+        },
+        {
+          src: "public/img/icons/manifest-icon-512.maskable.png",
+          sizes: "512x512",
+          type: "image/png",
+          purpose: "any",
+        },
+        {
+          src: "public/img/icons/manifest-icon-512.maskable.png",
+          sizes: "512x512",
+          type: "image/png",
+          purpose: "maskable",
+        },
+      ],
+    },
+  },
+  modules: ["@nuxt/ui", "nuxt-auth-utils", "@prisma/nuxt", "@vite-pwa/nuxt"],
 })
