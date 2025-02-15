@@ -15,8 +15,19 @@ export default defineNuxtConfig({
     imports: {
       dirs: ["server/lib/**/*.ts"],
     },
+    experimental: {
+      openAPI: true,
+    },
   },
-  devtools: { enabled: true },
+  experimental: {
+    typedPages: true,
+  },
+  devtools: {
+    enabled: true,
+    timeline: {
+      enabled: true,
+    },
+  },
   css: ["~/assets/css/main.css"],
   pwa: {
     manifest: {
@@ -48,5 +59,11 @@ export default defineNuxtConfig({
       ],
     },
   },
-  modules: ["@nuxt/ui", "nuxt-auth-utils", "@prisma/nuxt", "@vite-pwa/nuxt"],
+  modules: [
+    "@nuxt/ui",
+    "nuxt-auth-utils",
+    "@prisma/nuxt",
+    "@vite-pwa/nuxt",
+    "nuxt-time",
+  ],
 })

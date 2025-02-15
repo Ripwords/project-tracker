@@ -1,14 +1,34 @@
-<script setup lang="ts">
-const { loggedIn } = useUserSession()
+<script lang="ts" setup>
+const { loggedIn, user } = useUserSession()
 
-const items = [
+const items = computed(() => [
   [
     {
       label: "Home",
       icon: "i-heroicons-home",
       to: "/",
     },
-  ],
+    {
+      label: "Home",
+      icon: "i-heroicons-home",
+      to: "/admin",
+    },
+    {
+      label: "Users",
+      icon: "i-heroicons-user",
+      to: "/admin/users",
+    },
+    {
+      label: "Projects",
+      icon: "i-heroicons-building-office",
+      to: "/admin/projects",
+    },
+  ].filter((item) => {
+    if (user.value?.isAdmin) {
+      return item.to.includes("/admin")
+    }
+    return !item.to.includes("/admin")
+  }),
   [
     {
       label: "Logout",
@@ -17,7 +37,7 @@ const items = [
       external: true,
     },
   ],
-]
+])
 </script>
 
 <template>

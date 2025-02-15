@@ -1,8 +1,4 @@
 <script setup lang="ts">
-definePageMeta({
-  layout: "admin",
-})
-
 import { PAGE_SIZE } from "#shared/constants"
 
 const pageIndex = ref(1)

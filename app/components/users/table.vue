@@ -18,7 +18,7 @@ const columns: TableColumn<Api["/api/admin/users"]["get"]["users"][number]>[] =
       accessorKey: "username",
       header: "Username",
       cell: ({ row }) => {
-        return h("div", { class: "w-28" }, row.original.username || "")
+        return h("div", { class: "w-12" }, row.original.username || "")
       },
     },
     {
@@ -46,17 +46,26 @@ const columns: TableColumn<Api["/api/admin/users"]["get"]["users"][number]>[] =
         })
       },
     },
+    {
+      id: "action",
+      header: "Actions",
+    },
   ]
 </script>
 
 <template>
-  <div class="p-6 flex flex-col gap-4 items-center">
+  <UContainer>
     <UTable
-      class="w-fit"
+      class="h-96"
       :loading
       :columns
       :data="users"
-    />
+      :caption="`${total} users`"
+    >
+      <template #action-cell="{ row }">
+        {{ row.id }}
+      </template>
+    </UTable>
 
     <div class="flex justify-center border-t border-[var(--ui-border)] pt-4">
       <UPagination
@@ -66,5 +75,5 @@ const columns: TableColumn<Api["/api/admin/users"]["get"]["users"][number]>[] =
         @update:page="(p) => (pageIndex = p)"
       />
     </div>
-  </div>
+  </UContainer>
 </template>

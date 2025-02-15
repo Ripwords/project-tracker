@@ -38,6 +38,9 @@ export default defineEventHandler(async (event) => {
             },
           ],
         },
+        omit: {
+          hash: true,
+        },
       }),
       prisma.user.count({
         where: {
