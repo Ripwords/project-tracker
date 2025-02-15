@@ -35,6 +35,7 @@ export default defineEventHandler(async (event) => {
       users: {
         set: userIds.map((id) => ({ id })),
       },
+      updatedAt: new Date(),
     },
     include: {
       users: true,

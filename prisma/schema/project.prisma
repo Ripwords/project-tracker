@@ -1,10 +1,11 @@
 model Project {
-  id        String      @id @default(auto()) @map("_id") @db.ObjectId
-  name      String      @unique
-  users     User[]
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
-  TimeEntry TimeEntry[]
+  id           String      @id @default(auto()) @map("_id") @db.ObjectId
+  name         String      @unique
+  users        User[]
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  projectHours Int         @default(0)
+  TimeEntry    TimeEntry[]
 }
 
 model TimeEntry {
