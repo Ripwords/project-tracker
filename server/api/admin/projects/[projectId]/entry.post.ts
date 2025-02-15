@@ -34,6 +34,10 @@ export default defineEventHandler(async (event) => {
         where: {
           id: projectId,
         },
+        select: {
+          id: true,
+          projectHours: true,
+        },
       })
 
       if (!project) {
@@ -63,6 +67,21 @@ export default defineEventHandler(async (event) => {
         })
       }
 
+      const existingEntry = await tx.timeEntry.findUnique({
+        where: {
+          projectId_userId_date: {
+            projectId,
+            userId: user.id,
+            date: new Date(),
+          },
+        },
+      })
+
+      // Calculate the difference in duration for updating project hours
+      const durationDiff = existingEntry
+        ? duration - existingEntry.duration
+        : duration
+
       await tx.timeEntry.upsert({
         where: {
           projectId_userId_date: {
@@ -81,6 +100,17 @@ export default defineEventHandler(async (event) => {
           duration,
           description,
           date: new Date(),
+        },
+      })
+
+      // Update project hours and updatedAt
+      await tx.project.update({
+        where: {
+          id: projectId,
+        },
+        data: {
+          projectHours: project.projectHours + durationDiff,
+          updatedAt: new Date(),
         },
       })
     })
