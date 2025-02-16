@@ -11,6 +11,14 @@ export default defineNuxtConfig({
     adminUser: undefined,
     adminPassword: undefined,
   },
+  vite: {
+    resolve: {
+      alias: {
+        ".prisma/client/index-browser":
+          "./node_modules/.prisma/client/index-browser.js",
+      },
+    },
+  },
   nitro: {
     imports: {
       dirs: ["server/lib/**/*.ts"],
