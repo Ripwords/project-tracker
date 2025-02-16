@@ -4,10 +4,7 @@ definePageMeta({
 })
 import { z } from "zod"
 
-const { user } = useUserSession()
-const { data: projectsData, status } = useFetch(
-  `/api/users/${user.value?.id}/projects`
-)
+const { data: projectsData, status } = useFetch("/api/users/projects")
 const router = useRouter()
 const toast = useToast()
 
