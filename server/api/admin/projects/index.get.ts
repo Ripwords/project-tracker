@@ -1,7 +1,12 @@
+import { z } from "zod"
+
+const querySchema = z.object({
+  page: z.coerce.number().optional().default(1),
+  limit: z.coerce.number().optional().default(10),
+})
+
 export default defineEventHandler(async (event) => {
-  const query = getQuery(event)
-  const page = parseInt(query.page as string) || 1
-  const limit = parseInt(query.limit as string) || 10
+  const { page, limit } = await getValidatedQuery(event, querySchema.parse)
   const skip = (page - 1) * limit
 
   try {

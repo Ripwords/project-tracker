@@ -1,7 +1,7 @@
 export default defineEventHandler(async (event) => {
   // Check authentication
-  const session = await getUserSession(event)
-  if (!session || !session.user || !session.user.discordId) {
+  const session = await requireUserSession(event)
+  if (!session || !session.user || !session.user.id) {
     throw createError({
       statusCode: 401,
       message: "Unauthorized",
@@ -16,9 +16,10 @@ export default defineEventHandler(async (event) => {
 
   // Fetch time entries
   const [timeEntries, total] = await Promise.all([
-    event.context.prisma.timeEntry.findMany({
+    prisma.timeEntry.findMany({
       where: {
-        userId: session.user.discordId,
+        userId: session.user.id,
+        ...(query.projectId ? { projectId: String(query.projectId) } : {}),
       },
       include: {
         project: true,
@@ -31,7 +32,7 @@ export default defineEventHandler(async (event) => {
     }),
     prisma.timeEntry.count({
       where: {
-        userId: session.user.discordId,
+        userId: session.user.id,
       },
     }),
   ])

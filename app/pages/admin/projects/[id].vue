@@ -80,13 +80,39 @@ const { data: project, refresh } = await useLazyFetch<
           <h2 class="text-lg font-semibold">Quick Stats</h2>
         </template>
         <div class="space-y-4">
-          <div class="flex items-center justify-between p-2 rounded-lg">
-            <div class="text-sm font-medium">Total Users</div>
-            <div class="text-lg font-semibold">
-              {{ project.users?.length || 0 }}
+          <div class="grid grid-cols-2 gap-4">
+            <!-- Total Users -->
+            <div class="p-4 rounded-lg bg-neutral-50 dark:bg-neutral-800">
+              <div class="text-sm font-medium text-neutral-500">
+                Total Users
+              </div>
+              <div class="mt-1 flex items-baseline justify-between">
+                <div class="text-2xl font-semibold">
+                  {{ project.users?.length || 0 }}
+                </div>
+                <UIcon
+                  name="i-heroicons-users"
+                  class="text-gray-400 h-5 w-5"
+                />
+              </div>
+            </div>
+
+            <!-- Total Hours -->
+            <div class="p-4 rounded-lg bg-neutral-50 dark:bg-neutral-800">
+              <div class="text-sm font-medium text-neutral-500">
+                Total Hours
+              </div>
+              <div class="mt-1 flex items-baseline justify-between">
+                <div class="text-2xl font-semibold">
+                  {{ project.projectHours }}
+                </div>
+                <UIcon
+                  name="i-heroicons-clock"
+                  class="text-gray-400 h-5 w-5"
+                />
+              </div>
             </div>
           </div>
-          <!-- Add more stats here if available -->
         </div>
       </UCard>
     </div>

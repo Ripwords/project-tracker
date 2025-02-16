@@ -1,5 +1,4 @@
 import type { DiscordOAuthSuccessResponse } from "#shared/types"
-import prisma from "~~/server/lib/prisma"
 
 export default defineOAuthDiscordEventHandler({
   async onSuccess(event, { user }) {
@@ -22,8 +21,9 @@ export default defineOAuthDiscordEventHandler({
 
     await setUserSession(event, {
       user: {
-        discordId: user.discordId,
-        username: user.username,
+        id: existingUser?.id,
+        discordId: discordUser.id,
+        username: discordUser.username,
       },
     })
 

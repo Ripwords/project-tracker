@@ -5,9 +5,9 @@ const paramsSchema = z.object({
 })
 
 export default defineEventHandler(async (event) => {
-  const session = await getUserSession(event)
+  const session = await requireUserSession(event)
 
-  if (!session || !session.user || !session.user.discordId) {
+  if (!session || !session.user || !session.user.id) {
     throw createError({
       statusCode: 401,
       statusMessage: "Unauthorized",
@@ -38,7 +38,7 @@ export default defineEventHandler(async (event) => {
       }
 
       // Only allow users to delete their own entries
-      if (timeEntry.userId !== session.user?.discordId) {
+      if (timeEntry.userId !== session.user?.id) {
         throw createError({
           statusCode: 403,
           statusMessage: "Forbidden",

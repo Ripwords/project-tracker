@@ -4,7 +4,7 @@ import type * as Prisma from "@prisma/client"
 declare module "#auth-utils" {
   interface User
     extends Partial<
-      Pick<Prisma.User, "discordId" | "username" | "email" | "role">
+      Pick<Prisma.User, "discordId" | "username" | "email" | "role" | "id">
     > {
     isAdmin?: boolean
   }

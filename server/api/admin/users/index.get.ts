@@ -7,7 +7,7 @@ const querySchema = z.object({
 })
 
 export default defineEventHandler(async (event) => {
-  const { user } = await getUserSession(event)
+  const { user } = await requireUserSession(event)
 
   const { page = 1, limit = PAGE_SIZE } = await getValidatedQuery(
     event,
@@ -40,6 +40,9 @@ export default defineEventHandler(async (event) => {
         },
         omit: {
           hash: true,
+        },
+        include: {
+          TimeEntry: true,
         },
       }),
       prisma.user.count({
