@@ -17,12 +17,13 @@
   },
   "private": true,
   "scripts": {
-    "build": "nuxt build",
+    "build": "bun run db:push && nuxt build",
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "gen": "bun x prisma generate",
+    "db:push": "bun x prisma db push",
     "assets": "pwa-asset-generator public/logo.png public/img/icons --padding '0%'"
   },
   "type": "module",
