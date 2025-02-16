@@ -4,24 +4,36 @@ export default defineOAuthDiscordEventHandler({
   async onSuccess(event, { user }) {
     const discordUser = user as DiscordOAuthSuccessResponse["user"]
 
-    const existingUser = await prisma.user.findFirst({
-      where: {
-        discordId: discordUser.id,
-      },
-    })
-
-    if (!existingUser) {
-      await prisma.user.create({
-        data: {
+    const { newUser } = await prisma.$transaction(async (tx) => {
+      const existingUser = await tx.user.findFirst({
+        where: {
           discordId: discordUser.id,
-          username: discordUser.username,
         },
       })
-    }
+
+      if (!existingUser) {
+        await tx.user.create({
+          data: {
+            discordId: discordUser.id,
+            username: discordUser.username,
+          },
+        })
+      }
+
+      const newUser = await tx.user.findFirst({
+        where: {
+          discordId: discordUser.id,
+        },
+      })
+
+      return {
+        newUser,
+      }
+    })
 
     await setUserSession(event, {
       user: {
-        id: existingUser?.id,
+        id: newUser?.id,
         discordId: discordUser.id,
         username: discordUser.username,
       },

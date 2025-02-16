@@ -9,23 +9,15 @@ const timeEntrySchema = z.object({
       Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate())
     )
   }),
-  duration: z.number(),
+  duration: z.coerce.number(),
   description: z.string(),
 })
 
 export default defineEventHandler(async (event) => {
   // Check authentication
-  const session = await requireUserSession(event)
-  if (!session || !session.user || !session.user.id) {
-    throw createError({
-      statusCode: 401,
-      message: "Unauthorized",
-    })
-  }
-
+  const { user } = await requireUserSession(event)
   // Validate request body
   const body = await readValidatedBody(event, timeEntrySchema.parse)
-  const userId = session.user.id
 
   // Create or update time entry within a transaction
   const timeEntry = await prisma.$transaction(async (tx) => {
@@ -33,7 +25,7 @@ export default defineEventHandler(async (event) => {
     const existingEntry = await tx.timeEntry.findFirst({
       where: {
         projectId: body.projectId,
-        userId,
+        userId: user.id,
         date: body.date,
       },
     })
@@ -63,13 +55,13 @@ export default defineEventHandler(async (event) => {
         id: existingEntry?.id,
         projectId_userId_date: {
           projectId: body.projectId,
-          userId,
+          userId: user.id!,
           date: body.date,
         },
       },
       create: {
         ...body,
-        userId,
+        userId: user.id!,
       },
       update: {
         duration: body.duration,
