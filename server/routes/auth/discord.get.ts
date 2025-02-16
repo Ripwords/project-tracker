@@ -4,7 +4,7 @@ export default defineOAuthDiscordEventHandler({
   async onSuccess(event, { user }) {
     const discordUser = user as DiscordOAuthSuccessResponse["user"]
 
-    const existingUser = await prisma.user.findUnique({
+    const existingUser = await prisma.user.findFirst({
       where: {
         discordId: discordUser.id,
       },
