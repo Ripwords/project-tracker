@@ -63,7 +63,12 @@ const columns: TableColumn<(typeof props.project.users)[number]>[] = [
   },
   {
     accessorKey: "hours",
-    header: "Hours",
+    header: "Hour(s)",
+    cell: ({ row }) => {
+      return availableUsers.value?.users
+        .find((user) => user.id === row.original.id)
+        ?.TimeEntry.reduce((acc, curr) => acc + curr.duration, 0)
+    },
   },
 ]
 </script>

@@ -10,7 +10,7 @@ const paramsSchema = z.object({
 })
 
 export default defineEventHandler(async (event) => {
-  const session = await getUserSession(event)
+  const session = await requireUserSession(event)
 
   if (!session || !session.user) {
     throw createError({
@@ -47,7 +47,7 @@ export default defineEventHandler(async (event) => {
         })
       }
 
-      if (!session.user?.discordId) {
+      if (!session.user?.id) {
         throw createError({
           statusCode: 401,
           statusMessage: "Unauthorized",
@@ -56,7 +56,7 @@ export default defineEventHandler(async (event) => {
 
       const user = await tx.user.findUnique({
         where: {
-          discordId: session.user.discordId,
+          id: session.user.id,
         },
       })
 

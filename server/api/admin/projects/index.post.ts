@@ -5,7 +5,7 @@ const bodySchema = z.object({
 })
 
 export default defineEventHandler(async (event) => {
-  const session = await getUserSession(event)
+  const session = await requireUserSession(event)
 
   if (!session) {
     throw createError({

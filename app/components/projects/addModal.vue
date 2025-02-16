@@ -5,7 +5,6 @@ const props = defineProps<{
 
 const isModalOpen = ref(false)
 const newProjectName = ref("")
-const selectedDeveloper = ref<string[]>([])
 const toast = useToast()
 
 async function addProject() {

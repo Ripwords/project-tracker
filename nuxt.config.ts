@@ -65,5 +65,6 @@ export default defineNuxtConfig({
     "@prisma/nuxt",
     "@vite-pwa/nuxt",
     "nuxt-time",
+    "dayjs-nuxt",
   ],
 })

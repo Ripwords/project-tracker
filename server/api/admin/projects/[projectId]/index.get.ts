@@ -6,7 +6,7 @@ const paramsSchema = z.object({
 
 export default defineEventHandler(async (event) => {
   // Check authentication and admin role
-  const session = await getUserSession(event)
+  const session = await requireUserSession(event)
   if (!session?.user?.isAdmin) {
     throw createError({
       statusCode: 403,

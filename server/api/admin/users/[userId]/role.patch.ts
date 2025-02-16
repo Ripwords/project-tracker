@@ -10,7 +10,7 @@ const bodySchema = z.object({
 })
 
 export default defineEventHandler(async (event) => {
-  const { user } = await getUserSession(event)
+  const { user } = await requireUserSession(event)
 
   if (!user?.isAdmin) {
     throw createError({
