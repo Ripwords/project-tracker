@@ -1,6 +1,6 @@
 export default defineEventHandler(async (event) => {
   const includedPaths = ["/api"]
-  const excludedPaths = ["/auth", "/api/_auth/session"]
+  const excludedPaths = ["/auth", "/api/_auth/session", "/api/admin/login"]
   if (
     !includedPaths.some((path) => event.path.includes(path)) ||
     excludedPaths.some((path) => event.path.includes(path))

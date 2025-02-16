@@ -1,5 +1,3 @@
-import prisma from "~~/server/lib/prisma"
-
 export default defineNitroPlugin(async () => {
   const config = useRuntimeConfig()
   const adminUser = config.adminUser
