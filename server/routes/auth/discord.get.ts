@@ -1,6 +1,9 @@
 import type { DiscordOAuthSuccessResponse } from "#shared/types"
 
 export default defineOAuthDiscordEventHandler({
+  config: {
+    scope: ["email", "identify"],
+  },
   async onSuccess(event, { user }) {
     const discordUser = user as DiscordOAuthSuccessResponse["user"]
 
@@ -16,13 +19,14 @@ export default defineOAuthDiscordEventHandler({
           data: {
             discordId: discordUser.id,
             username: discordUser.username,
+            email: discordUser.email,
           },
         })
       }
 
-      const newUser = await tx.user.findFirst({
+      const newUser = await tx.user.findUnique({
         where: {
-          discordId: discordUser.id,
+          email: discordUser.email,
         },
       })
 

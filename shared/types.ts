@@ -23,5 +23,7 @@ export type DiscordOAuthSuccessResponse = {
     mfa_enabled: boolean
     locale: string
     premium_type: number
+    email: string
+    verified: boolean
   }
 }
