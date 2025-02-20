@@ -5,10 +5,12 @@ const props = defineProps<{
   project: Api["/api/admin/projects/:projectId"]["get"]
   refresh: () => void
 }>()
+const UButton = resolveComponent("UButton")
 
 const isModalOpen = ref(false)
+const isConfirmModalOpen = ref(false)
+const userToRemove = ref<string | null>(null)
 const toast = useToast()
-
 const { data: availableUsers } = await useFetch("/api/admin/users")
 const selectedUsers = ref(props.project.users.map((user) => user.id))
 
@@ -37,9 +39,34 @@ const handleUpdateUsers = async () => {
 }
 
 const handleRemoveUser = async (userId: string) => {
-  const updatedUsers = selectedUsers.value.filter((id) => id !== userId)
+  userToRemove.value = userId
+  isConfirmModalOpen.value = true
+}
+
+const confirmRemoveUser = async () => {
+  if (!userToRemove.value) return
+
+  const updatedUsers = selectedUsers.value.filter(
+    (id) => id !== userToRemove.value
+  )
   selectedUsers.value = updatedUsers
-  await handleUpdateUsers()
+
+  try {
+    await handleUpdateUsers()
+    toast.add({
+      title: "User removed",
+      description: "User has been removed from the project successfully",
+    })
+  } catch (error) {
+    toast.add({
+      title: "Error removing user",
+      description: "Failed to remove user from the project",
+      color: "error",
+    })
+  } finally {
+    isConfirmModalOpen.value = false
+    userToRemove.value = null
+  }
 }
 
 // Filter out users that are already assigned
@@ -65,9 +92,24 @@ const columns: TableColumn<(typeof props.project.users)[number]>[] = [
     accessorKey: "hours",
     header: "Hour(s)",
     cell: ({ row }) => {
-      return availableUsers.value?.users
-        .find((user) => user.id === row.original.id)
-        ?.TimeEntry.reduce((acc, curr) => acc + curr.duration, 0)
+      return (
+        (availableUsers.value?.users
+          .find((user) => user.id === row.original.id)
+          ?.TimeEntry.reduce((acc, curr) => acc + curr.duration, 0) ?? 0) / 60
+      )
+    },
+  },
+  {
+    accessorKey: "action",
+    header: "Action",
+    cell: ({ row }) => {
+      return h(UButton, {
+        icon: "i-heroicons-user-minus",
+        color: "error",
+        variant: "ghost",
+        size: "xs",
+        onClick: () => handleRemoveUser(row.original.id),
+      })
     },
   },
 ]
@@ -140,6 +182,41 @@ const columns: TableColumn<(typeof props.project.users)[number]>[] = [
                 @click="handleUpdateUsers"
               >
                 Save Changes
+              </UButton>
+            </div>
+          </template>
+        </UCard>
+      </template>
+    </UModal>
+
+    <!-- Confirmation Modal -->
+    <UModal v-model:open="isConfirmModalOpen">
+      <template #content>
+        <UCard>
+          <template #header>
+            <h3 class="text-base font-semibold leading-6">
+              Confirm Remove User
+            </h3>
+          </template>
+
+          <p class="text-sm">
+            Are you sure you want to remove this user from the project? This
+            action cannot be undone.
+          </p>
+
+          <template #footer>
+            <div class="flex justify-end gap-2">
+              <UButton
+                variant="outline"
+                @click="isConfirmModalOpen = false"
+              >
+                Cancel
+              </UButton>
+              <UButton
+                color="error"
+                @click="confirmRemoveUser"
+              >
+                Remove User
               </UButton>
             </div>
           </template>

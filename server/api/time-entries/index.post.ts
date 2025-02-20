@@ -2,13 +2,10 @@ import { z } from "zod"
 
 const timeEntrySchema = z.object({
   projectId: z.string(),
-  date: z.string().transform((date) => {
-    const d = new Date(date)
-    // Normalize to start of day in UTC
-    return new Date(
-      Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate())
-    )
-  }),
+  date: z
+    .string()
+    .date()
+    .transform((date) => new Date(date)),
   duration: z.coerce.number(),
   description: z.string(),
 })
@@ -19,22 +16,8 @@ export default defineEventHandler(async (event) => {
   // Validate request body
   const body = await readValidatedBody(event, timeEntrySchema.parse)
 
-  // Create or update time entry within a transaction
+  // Create time entry within a transaction
   const timeEntry = await prisma.$transaction(async (tx) => {
-    // Find existing time entry
-    const existingEntry = await tx.timeEntry.findFirst({
-      where: {
-        projectId: body.projectId,
-        userId: user.id,
-        date: body.date,
-      },
-    })
-
-    // Calculate the duration difference for project hours
-    const durationDiff = existingEntry
-      ? body.duration - existingEntry.duration
-      : body.duration
-
     // Get current project hours
     const currentProjectHours = await tx.project.findUnique({
       where: { id: body.projectId },
@@ -45,27 +28,16 @@ export default defineEventHandler(async (event) => {
     await tx.project.update({
       where: { id: body.projectId },
       data: {
-        projectHours: (currentProjectHours?.projectHours ?? 0) + durationDiff,
+        projectHours:
+          (currentProjectHours?.projectHours ?? 0) + body.duration / 60,
       },
     })
 
-    // Create or update time entry
-    return await tx.timeEntry.upsert({
-      where: {
-        id: existingEntry?.id,
-        projectId_userId_date: {
-          projectId: body.projectId,
-          userId: user.id!,
-          date: body.date,
-        },
-      },
-      create: {
+    // Create new time entry
+    return await tx.timeEntry.create({
+      data: {
         ...body,
         userId: user.id!,
-      },
-      update: {
-        duration: body.duration,
-        description: body.description,
       },
       include: {
         project: true,

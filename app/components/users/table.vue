@@ -10,15 +10,24 @@ const { users, pageSize, refresh } = defineProps<{
   refresh: () => void
 }>()
 const pageIndex = defineModel<number>("pageIndex", { required: true })
+const toast = useToast()
 
 const USelect = resolveComponent("USelect")
+const router = useRouter()
 const columns: TableColumn<Api["/api/admin/users"]["get"]["users"][number]>[] =
   [
     {
       accessorKey: "username",
       header: "Username",
       cell: ({ row }) => {
-        return h("div", { class: "w-12" }, row.original.username || "")
+        return h(
+          "div",
+          {
+            class: "w-12 hover:underline hover:cursor-pointer",
+            onClick: () => router.push(`/admin/users/${row.original.id}`),
+          },
+          row.original.username || ""
+        )
       },
     },
     {
@@ -35,13 +44,26 @@ const columns: TableColumn<Api["/api/admin/users"]["get"]["users"][number]>[] =
               value: role,
             })),
           "onUpdate:modelValue": async (value: Role) => {
-            await $fetch(`/api/admin/users/${row.original.id}/role`, {
-              method: "PATCH",
-              body: {
-                role: value,
-              },
-            })
-            refresh()
+            try {
+              await $fetch(`/api/admin/users/${row.original.id}/role`, {
+                method: "PATCH",
+                body: {
+                  role: value,
+                },
+              })
+              toast.add({
+                title: "Role updated",
+                description: "The role of the user has been updated",
+                icon: "i-heroicons-check-circle",
+              })
+            } catch {
+              toast.add({
+                title: "Error",
+                description: "An error occurred while updating the role",
+              })
+            } finally {
+              refresh()
+            }
           },
         })
       },

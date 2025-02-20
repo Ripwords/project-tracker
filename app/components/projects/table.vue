@@ -3,7 +3,6 @@ import type { TableColumn } from "@nuxt/ui"
 
 const NuxtLink = resolveComponent("NuxtLink")
 const UButton = resolveComponent("UButton")
-const UIcon = resolveComponent("UIcon")
 
 const isDeleteModalOpen = ref(false)
 const selectedProjectId = ref()
@@ -61,6 +60,10 @@ const columns: TableColumn<
     },
   },
 ]
+
+const handleRowClick = (row: any) => {
+  navigateTo(`/admin/projects/${row.original.id}`)
+}
 </script>
 
 <template>
@@ -78,9 +81,12 @@ const columns: TableColumn<
       </div>
       <UTable
         class="h-96"
-        :loading
-        :columns
+        :loading="loading"
+        :columns="columns"
         :data="projects"
+        :ui="{
+          tr: 'cursor-pointer',
+        }"
       />
     </div>
 

@@ -13,20 +13,28 @@ const state = reactive({
   date: new Date().toISOString().split("T")[0],
   duration: 0,
   description: "",
+  durationUnit: "hours" as "minutes" | "hours",
 })
 
 const schema = z.object({
   projectId: z.string().min(1, "Project is required"),
-  date: z.string().min(1, "Date is required"),
-  duration: z.number().min(0.5, "Duration must be at least 30 minutes"),
+  date: z.string().date().min(1, "Date is required"),
+  duration: z.number().min(1, "Duration must be at least 1 minute"),
   description: z.string().min(1, "Description is required"),
+  durationUnit: z.enum(["minutes", "hours"]),
 })
 
 async function onSubmit() {
   try {
+    const durationInMinutes =
+      state.durationUnit === "hours" ? state.duration * 60 : state.duration
+
     await $fetch("/api/time-entries", {
       method: "POST",
-      body: state,
+      body: {
+        ...state,
+        duration: durationInMinutes,
+      },
     })
     toast.add({
       title: "Success",
@@ -40,8 +48,14 @@ async function onSubmit() {
       description: "Failed to add time entry",
       color: "error",
     })
+    console.error(error)
   }
 }
+
+const durationOptions = [
+  { label: "Minutes", value: "minutes" },
+  { label: "Hours", value: "hours" },
+]
 </script>
 
 <template>
@@ -97,20 +111,31 @@ async function onSubmit() {
               />
             </UFormField>
 
-            <UFormField
-              name="duration"
-              label="Duration (hours)"
-              required
-            >
-              <UInput
-                v-model="state.duration"
-                type="number"
-                min="0.5"
-                step="0.5"
-                icon="i-heroicons-clock"
+            <div class="space-y-2">
+              <UFormField
+                name="duration"
+                :label="`Duration (${state.durationUnit})`"
                 required
-              />
-            </UFormField>
+              >
+                <div class="flex gap-2">
+                  <UInput
+                    v-model="state.duration"
+                    type="number"
+                    :min="1"
+                    :step="1"
+                    icon="i-heroicons-clock"
+                    required
+                    class="flex-1"
+                  />
+                  <USelect
+                    v-model="state.durationUnit"
+                    :items="durationOptions"
+                    icon="i-heroicons-clock"
+                    class="w-32"
+                  />
+                </div>
+              </UFormField>
+            </div>
           </div>
 
           <UFormField
